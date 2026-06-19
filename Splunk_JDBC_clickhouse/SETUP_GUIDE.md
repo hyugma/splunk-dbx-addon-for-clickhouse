@@ -6,7 +6,7 @@ This document provides step-by-step instructions for connecting Splunk DB Connec
 1. Ensure the **Splunk DB Connect** App is installed and its Task Server is running properly.
 2. Ensure this custom Add-on (`splunk-dbx-addon-for-clickhouse_100.tgz`) is installed in your Splunk environment.
 3. Have your ClickHouse Cloud connection details ready (Host URL, Username, Password).
-   - e.g., Host: `xxxxxx.clickhouse.cloud`, Port: `8443`, Username: `default`
+   - e.g., Host: `xxxxxx.clickhouse.cloud`, Port: `443`, Username: `default`
 
 ## 2. Create an Identity
 Register the credentials that DB Connect will use to log into ClickHouse.
@@ -30,8 +30,10 @@ Set up the connection to your ClickHouse Cloud endpoint.
    - **Connection Type**: Select **`ClickHouse`**
    - **Timezone**: Database timezone (usually `UTC`)
    - **Host**: ClickHouse Cloud endpoint (e.g., `xxxxxx.gcp.clickhouse.cloud`)
-   - **Port**: **`8443`** (The default secure port for ClickHouse Cloud)
+   - **Port**: **`443`** (The default secure port for ClickHouse Cloud)
    - **Default Database**: `default` (or your specific database name)
+
+   > **Note on Ports**: ClickHouse Cloud accepts HTTPS connections on both port `443` and `8443`. This Add-on defaults to `443` because **Splunk Cloud blocks outbound traffic on non-standard ports** (including `8443`) by default. Port `443` is universally allowed on both Splunk Enterprise and Splunk Cloud environments. If you are using Splunk Enterprise on-premise, you may also use port `8443`.
 4. **[CRITICAL] Enable SSL**: Ensure you **check this box**.
    - This automatically appends `?ssl=true` to the JDBC URL, which is required by ClickHouse Cloud.
 5. Click **[Save]**. If the configuration is correct, a green "Success" notification will appear.

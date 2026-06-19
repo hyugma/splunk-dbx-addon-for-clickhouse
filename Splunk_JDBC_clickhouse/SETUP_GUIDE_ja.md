@@ -6,7 +6,7 @@
 1. Splunk 上で **Splunk DB Connect** App がインストールされ、Task Server が正常に起動していることを確認してください。
 2. 本アドオン (`splunk-dbx-addon-for-clickhouse_100.tgz`) が Splunk にインストールされていることを確認してください。
 3. ClickHouse Cloud 側の接続情報（エンドポイントの Host URL、Username、Password）を手元に用意します。
-   - 例: Host: `xxxxxx.clickhouse.cloud`, Port: `8443`, User: `default`
+   - 例: Host: `xxxxxx.clickhouse.cloud`, Port: `443`, User: `default`
 
 ## 2. Identity (認証情報) の登録
 DB Connect が ClickHouse にログインするためのユーザー名とパスワードを登録します。
@@ -30,8 +30,10 @@ DB Connect が ClickHouse にログインするためのユーザー名とパス
    - **Connection Type**: **`ClickHouse`** を選択
    - **Timezone**: データベース側のタイムゾーン（基本は `UTC` を推奨）
    - **Host**: ClickHouse Cloud のエンドポイント（例：`xxxxxx.gcp.clickhouse.cloud`）
-   - **Port**: **`8443`**（ClickHouse Cloud の SSL 接続用ポート）
+   - **Port**: **`443`**（ClickHouse Cloud の SSL 接続用ポート）
    - **Default Database**: `default`（または利用したいデータベース名）
+
+   > **ポートに関する注意**: ClickHouse Cloud はポート `443` と `8443` の両方で HTTPS 接続を受け付けます。本アドオンではデフォルトを `443` に設定しています。これは、**Splunk Cloud が非標準ポート（`8443` を含む）への送信トラフィックをデフォルトでブロックする**ためです。ポート `443` は Splunk Enterprise と Splunk Cloud の両環境で使用可能です。オンプレミスの Splunk Enterprise をご利用の場合は、ポート `8443` も使用できます。
 4. **【重要】Enable SSL** のチェックボックスに必ず**チェックを入れます**。
    - これにより、内部的に `?ssl=true` オプションが付与され、ClickHouse Cloud とのセキュア通信が可能になります。
 5. 下部の **[Save]** をクリックします。設定が正しければ緑色の「Success」が表示されます。

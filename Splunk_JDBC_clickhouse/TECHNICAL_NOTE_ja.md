@@ -32,4 +32,16 @@ Splunk DB Connect の仕様上、公式の ClickHouse JDBC ドライバー（例
 JDBCのロード問題とは別に、Splunk DB Connect の UI 側で Connection を保存する際、「The connection is invalid」というエラーで保存が弾かれる問題がありました。
 これはドライバーの問題ではなく Splunk 側の仕様であり、`db_connection_types.conf` に以下の2つの必須属性を追加することでパッチを当てています。
 - `testQuery = SELECT 1` (接続時の死活監視用クエリ)
-- `port = 8123` (デフォルトポートの明示)
+- `port = 443` (デフォルトポートの明示)
+
+### D. Splunk Cloud でのポート互換性
+本アドオンを **Splunk Cloud** にデプロイする場合、非標準ポート（`8443` など）への送信接続はデフォルトでブロックされます。Splunk Cloud の送信ファイアウォールは、`443`（HTTPS）のような既知のポートへのトラフィックのみ許可します。ACS（Admin Config Service）API を使用してカスタム送信ポートを開放できますが、この機能は**シングルインスタンスまたはトライアル版の Splunk Cloud では利用できません**。
+
+この問題の回避策として、本アドオンではデフォルトポートを `443` に設定しています。ClickHouse Cloud はポート `8443` と同様に `443` でも HTTPS 接続を受け付けるため、追加のネットワーク設定なしに Splunk Enterprise と Splunk Cloud の両方で動作します。
+
+| 環境 | ポート `443` | ポート `8443` |
+|------|-------------|--------------|
+| Splunk Enterprise（オンプレミス） | ✅ 動作 | ✅ 動作 |
+| Splunk Cloud（標準） | ✅ 動作 | ❌ デフォルトでブロック |
+| Splunk Cloud（ACS 送信ルール設定済み） | ✅ 動作 | ✅ 動作（ルール追加時） |
+

@@ -31,4 +31,16 @@ The `lib/dbxdrivers/` directory was strictly cleaned up to contain **ONLY ONE** 
 Separate from the JDBC loading issues, the Splunk DB Connect UI would reject saving the connection with a generic `The connection is invalid. No further details provided.` error, even when the backend successfully connected to the database.
 To patch this UI validation issue, specific attributes were forcibly added to `default/db_connection_types.conf`:
 - `testQuery = SELECT 1` (Required by Splunk UI to validate the connection health)
-- `port = 8123` (Required to properly render the UI configuration form)
+- `port = 443` (Required to properly render the UI configuration form)
+
+### D. Splunk Cloud Port Compatibility
+When deploying this Add-on to **Splunk Cloud**, outbound connections on non-standard ports (such as `8443`) are blocked by default. Splunk Cloud's outbound firewall only allows traffic on well-known ports like `443` (HTTPS). The ACS (Admin Config Service) API can be used to open custom outbound ports, but this feature is **not available on single-instance or trial Splunk Cloud deployments**.
+
+As a workaround, this Add-on uses port `443` as the default, which ClickHouse Cloud accepts for HTTPS connections alongside port `8443`. This ensures the Add-on works out of the box on both Splunk Enterprise and Splunk Cloud without any additional network configuration.
+
+| Environment | Port `443` | Port `8443` |
+|-------------|-----------|------------|
+| Splunk Enterprise (on-premise) | ✅ Works | ✅ Works |
+| Splunk Cloud (standard) | ✅ Works | ❌ Blocked by default |
+| Splunk Cloud (with ACS outbound rule) | ✅ Works | ✅ Works (if rule added) |
+

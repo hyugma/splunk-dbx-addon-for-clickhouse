@@ -21,7 +21,7 @@
     "id": {
       "group": null,
       "name": "Splunk_JDBC_clickhouse",
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "license": {
       "name": null,
